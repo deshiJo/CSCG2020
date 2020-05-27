@@ -27,6 +27,7 @@ To avoid this security issue, the password could be placed on the server side (f
 
 This is the second reversing Challenge with the difficulty baby. We obtain the Flag from the server if we pass the right password. We also have the binary, running on the server.
 
+**Solution**
 
 This time **"strings ./rev2"** does not work for this challenge.
 My second try was using **"ltrace ./rev2"** to see if the binary calling some string comparison functions. 
@@ -65,3 +66,40 @@ Now the last step is again passing the password to the binary on the server, usi
 **CSCG{1s_th4t_wh4t_they_c4ll_on3way_transf0rmati0n?}**
 
 Again, this security issue can be avoided, if the password string isn't in the binary. The password can be placed encrypted on the server.
+
+
+## Intro to Reversing 3
+
+**Challenge**
+Like the two challanges before (Intro to  Reversing 1/2) we have to get a password to receive the flag from the server.
+
+**Solution**
+
+As alwys lets try if we get information about the programm using **strings** and **ltrace**.
+**ltrace** shows us that we have a string comparison again, but it looks like the password is encrypted this time.
+
+> lp`7a<qLw\x1ekHopt(f-f*,o}V\x0f\x15J
+
+We can checkt this by opening ghidra or another reverse engeneering tool and look at the decompiler output for the main method.
+The main method contains again a transformation. This time the program take each char and calculating 
+> (inputChar ^ (CharIndex - 10)) - 2
+
+We can calculate the password by coping the string from the **ltrace** string comparison **lp`7a\<qLw\x1ekHopt(f-f*,o}V\x0f\x15J** and revert the transformation with the following python script:
+
+```
+import os
+
+password_encrypted = "lp`7a<qLw\x1ekHopt(f-f*,o}V\x0f\x15J"
+password_decrypted = ""
+for i in range(0, len(password_encrypted)):
+    currentChar = ord(password_encrypted[i])
+    currentChar += 2
+    currentChar ^= (i+10)
+    password_decrypted += chr(currentChar)
+print(password_decrypted)
+os.system("echo \"{}\" | nc hax1.allesctf.net 9602".format(password_decrypted))
+```
+
+Again, this security issue can be avoided, if the password string isn't in the binary. The password can be placed encrypted on the server.
+
+
