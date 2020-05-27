@@ -71,6 +71,7 @@ Again, this security issue can be avoided, if the password string isn't in the b
 ## Intro to Reversing 3
 
 **Challenge**
+
 Like the two challanges before (Intro to  Reversing 1/2) we have to get a password to receive the flag from the server.
 
 **Solution**
@@ -80,11 +81,15 @@ As alwys lets try if we get information about the programm using **strings** and
 
 > lp`7a<qLw\x1ekHopt(f-f*,o}V\x0f\x15J
 
-We can checkt this by opening ghidra or another reverse engeneering tool and look at the decompiler output for the main method.
-The main method contains again a transformation. This time the program take each char and calculating 
+We can checkt this by opening ghidra or another reverse engeneering tool and look at the decompiled code for the main method.
+The main method contains again a transformation. This time the program take each char and calculating:
 > (inputChar ^ (CharIndex - 10)) - 2
 
-We can calculate the password by coping the string from the **ltrace** string comparison **lp`7a\<qLw\x1ekHopt(f-f*,o}V\x0f\x15J** and revert the transformation with the following python script:
+We can calculate the password by coping the string from the **ltrace** string comparison 
+
+> lp`7a<qLw\x1ekHopt(f-f*,o}V\x0f\x15J
+
+and revert the transformation with the following python script:
 
 ```
 import os
