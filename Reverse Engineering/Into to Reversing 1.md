@@ -81,7 +81,7 @@ As alwys lets try if we get information about the programm using **strings** and
 
 > lp`7a<qLw\x1ekHopt(f-f*,o}V\x0f\x15J
 
-We can checkt this by opening ghidra or another reverse engeneering tool and look at the decompiled code for the main method.
+We can check this by opening ghidra and look at the decompiled code for the main method.
 The main method contains again a transformation. This time the program take each char and calculating:
 > (inputChar ^ (CharIndex - 10)) - 2
 
