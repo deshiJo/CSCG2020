@@ -31,7 +31,9 @@ This is the second reversing Challenge with the difficulty baby. We obtain the F
 This time **"strings ./rev2"** does not work for this challenge.
 My second try was using **"ltrace ./rev2"** to see if the binary calling some string comparison functions. 
 ![](writeupfiles/ltraceRev2.png)
+
 Seems to be a unknown encoding, so i looked into the binary with Ghidra.
+
 ![](writeupfiles/rev2Ghidra.png)
 
 The main function contains the strcmp we saw in the ltrace output.
