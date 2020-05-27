@@ -107,11 +107,12 @@ os.system("echo \"{}\" | nc hax1.allesctf.net 9602".format(password_decrypted))
 
 Running this script results in the following output:
 
-> dyn4m1c_k3y_gen3r4t10n_y34h
+```
+dyn4m1c_k3y_gen3r4t10n_y34h
 Give me your password: 
 Thats the right password!
 Flag: CSCG{pass_1_g3ts_a_x0r_p4ss_2_g3ts_a_x0r_EVERYBODY_GETS_A_X0R}
-
+```
 
 Again, this security issue can be avoided, if the password string isn't in the binary. The password can be placed encrypted on the server.
 
