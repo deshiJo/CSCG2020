@@ -29,11 +29,13 @@ Again, we only get an image "chall.jpg".
 
 The image shows some highrise buildings in the night.
 ![Challenge image](writeupfiles/chall2.jpg)
+**Challenge image**
 
 Luckily i already saw this kind of challenge and knew instantly what to do.
 So if we search for the original image with google, we see that there are some differences.
 The highest tower on the left looks different. The lights in the windows are different from the original.
 ![Code withing image](writeupfiles/chall2Edited.jpg)
+**Binary code within the image**
 
 This is a binary code 
 ```
