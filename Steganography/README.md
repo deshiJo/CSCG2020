@@ -55,16 +55,12 @@ To solve this challenge we only get an image file "chall.png".
 
 ![chall3 image](writeupfiles/chall3.png)
 
-**Challenge image chall.png**
-
 **Solution**
 
 Exiftool and steghide doesn't work this time. 
 I used pngcheck ("pngcheck -v chall.png") to get some information about this file and it tells me that there is some data after the IEND chunk.
 
 ![terminalImage](writeupfiles/terminalStego3.png)
-
-**data after IEND**
 
 A png file consists of different chunk. The last chunk of a png file is the IEND chunk, which signals the end of the png file. So we maybe have some interesting at the end of this file.
 So i opened the file with vim and switched to xdd with “:%!xxd” to view the hexdump of the file, and searched for the IEND chunk.
@@ -79,7 +75,5 @@ So i downloaded stegsolve.jar, a java application which can modify our image in 
 While i scrolled through some different versions of the file i detected a message in the background of the image. The “random colour map”-Version of our image shows the password: **s33\_m3\_1f\_y0u\_c4n**.
 
 ![hiddenpassword](writeupfiles/passwordImage.png)
-
-**hidden password**
 
 Now the last obvious step is extracting the flag.txt with the found password and receiving the flag: **CSCG{H1dden_1n\_pla1n\_s1ght}**
