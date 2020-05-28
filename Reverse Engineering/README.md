@@ -34,7 +34,7 @@ My second try was using **"ltrace ./rev2"** to see if the binary calls some stri
 
 ![](writeupfiles/ltraceRev2.png)
 
-Seems to be a unknown encoding, so lets look into the binary with Ghidra.
+The string comparison seems to use an unknown encoding, so lets look into the binary with Ghidra.
 
 ![](writeupfiles/rev2Ghidra.png)
 
