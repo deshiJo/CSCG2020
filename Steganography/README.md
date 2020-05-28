@@ -28,12 +28,12 @@ Again, we only get an image "chall.jpg".
 **Solution**
 
 The image shows some highrise buildings in the night.
-[](writeupfiles/chall2.jpg)
+![](writeupfiles/chall2.jpg)
 
 Luckily i already saw this kind of challenge and knew instantly what to do.
 So if we search for the original image with google, we see that there are some differences.
 The highest tower on the left looks different. The lights in the windows are different from the original.
-[](writeupfiles/chall2Edited.jpg)
+![](writeupfiles/chall2Edited.jpg)
 
 This is a binary code 
 ```
