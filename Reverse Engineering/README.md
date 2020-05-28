@@ -30,10 +30,11 @@ This is the second reversing Challenge with the difficulty baby. We obtain the F
 **Solution**
 
 This time **"strings ./rev2"** does not work for this challenge.
-My second try was using **"ltrace ./rev2"** to see if the binary calling some string comparison functions. 
+My second try was using **"ltrace ./rev2"** to see if the binary calls some string comparison functions. 
+
 ![](writeupfiles/ltraceRev2.png)
 
-Seems to be a unknown encoding, so lets look into the binary with Ghidra.
+The string comparison seems to use an unknown encoding, so lets look into the binary with Ghidra.
 
 ![](writeupfiles/rev2Ghidra.png)
 

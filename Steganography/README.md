@@ -37,7 +37,7 @@ The highest tower on the left looks different. The lights in the windows are dif
 ![Code withing image](writeupfiles/chall2Edited.jpg)
 **Binary code within the image**
 
-This is a binary code 
+The windows in the upper left corner form a binary code
 ```
 010000110101001101000011010001110111101101100001010111110100011001101100001101000110011101111101
 ```
