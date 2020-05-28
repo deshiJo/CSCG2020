@@ -1,6 +1,6 @@
 # Web
 
-##StayWoke Shop
+## StayWoke Shop
 
 **Challenge**
 
@@ -27,9 +27,8 @@ So lets keep looking for something odd.
 
 While looking at the intercepted requests in burp i relized that the products are indexed with numbers.
 I added the product get-request to the repeater and tried the different numbers to see if there is any hidden product.
-And yes, there is a product "flag" at the index 1 (GET /products/1 HTTP/1.1), which costs 1337€.
+And yes, there is a product "flag" at the index 1 (GET /products/1 HTTP/1.1), which costs 1337€:
 
-IMAGE
 ![](writeupfiles/flagProduct.png)
 
 The rest is pretty easy.
