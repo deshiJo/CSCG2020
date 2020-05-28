@@ -53,7 +53,7 @@ Converting this binary code to ascii, retuls in the flag: **CSCG{a\_Fl4g}**
 
 To solve this challenge we only get an image file "chall.png".
 
-![](wirteupfiles/chall3.png)
+![](writeupfiles/chall3.png)
 
 **Solution**
 
