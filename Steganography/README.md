@@ -53,7 +53,7 @@ Converting this binary code to ascii, retuls in the flag: **CSCG{a\_Fl4g}**
 
 To solve this challenge we only get an image file "chall.png".
 
-![](writeupfiles/chall3.png)
+![chall3 image](writeupfiles/chall3.png)
 **Challenge image chall.png**
 
 **Solution**
@@ -61,7 +61,7 @@ To solve this challenge we only get an image file "chall.png".
 Exiftool and steghide doesn't work this time. 
 I used pngcheck ("pngcheck -v chall.png") to get some information about this file and it tells me that there is some data after the IEND chunk.
 
-![](writeupfiles/terminalStego3.png)
+![terminalImage](writeupfiles/terminalStego3.png)
 **data after IEND**
 
 A png file consists of different chunk. The last chunk of a png file is the IEND chunk, which signals the end of the png file. So we maybe have some interesting at the end of this file.
@@ -76,7 +76,7 @@ Because i connot find anything in the metadata or in the strings of the file, le
 So i downloaded stegsolve.jar, a java application which can modify our image in different ways. I startet it with **java -jar stegsolve.jar** and opened chall.png.
 While i scrolled through some different versions of the file i detected a message in the background of the image. The “random colour map”-Version of our image shows the password: **s33\_m3\_1f\_y0u\_c4n**.
 
-![](writeupfiles/passwordImage.png)
+![hiddenpassword](writeupfiles/passwordImage.png)
 **hidden password**
 
 Now the last obvious step is extracting the flag.txt with the found password and receiving the flag: **CSCG{H1dden_1n\_pla1n\_s1ght}**
