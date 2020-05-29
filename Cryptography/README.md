@@ -247,11 +247,146 @@ This attack is possible because of the small exponent e = 3. To avoid this issue
 ## RSA Service
 
 **Challenge**
+What did you say?
 
+nc hax1.allesctf.net 9400
+
+
+This challenge we get a python code named **"server.py"** and the corresponding server connection.
+
+The server executes the following code given in the file **"server.py"**:
+```
+#!/usr/bin/env python3.8
+# Note: The server is running a version of pyopenssl patched with this:
+# https://github.com/pyca/pyopenssl/pull/897
+# Attacking the pyopenssl wrapper code is not the intended solution.
+import OpenSSL.crypto as crypto
+
+welcome = '''=============== WELCOME TO THE RSA TEST SERVICE ===============
+You can send me a message and a key to decrypt it!
+If your setup works correctly, you will receive a flag as a reward!
+But wait, it is quite noisy here!
+'''
+question_to_ask = b"Hello! Can you give me the flag, please? I would really appreciate it!"
+
+
+print(welcome)
+print("Please give me your private key in PEM format:")
+key = ""
+while x := input():
+    key += x + "\n"
+
+message = input("Now give me your message: ")
+message = b"Quack! Quack!"
+print("Did you say '" + message.decode() + "'? I can't really understand you, the ducks are too loud!")
+
+key = crypto.load_privatekey(crypto.FILETYPE_PEM, key)
+assert key.check()
+numbers = key.to_cryptography_key().private_numbers()
+
+d = numbers.d
+N = numbers.p * numbers.q
+
+if pow(int.from_bytes(message, "big"), d, N) == int.from_bytes(question_to_ask, "big"):
+    print("CSCG{DUMMY_FLAG}")
+else:
+    print("That was not kind enough!")
+
+```
+
+So it seems that we have to calculate a correct key which decrypts the message **"Quark! Quack!"** to the plaintext message **"Hello! Can you give me the flag, please? I would really appreciate it!"**.
+With a correct key (N,d) the following equation should hold:
+M^d = C mod N, where C = **"Quark! Quack!"** and M = **"Hello! Can you give me the flag, please? I would really appreciate it!"**
 
 **Solution**
 
 
-Flag: 
+My first try was to choose d and calculate N from it. The resulting N was so big and i could not get the primefactors to calculte q,p,phi(N),e. But I've thought that my approach must be correct and i have to calculate the key (N,d) such that C^d mod N = M.
+After a pause of one or two weeks, I've thought again about the problem and I've came up with the idea to swap the order of my calculation. What if i choose an N and caclulate d with the discrete logarithm or another method. 
+So i've done some reasearch on attacking RSA by calulating the private exponent d. On Wikipedia lists some algorithms, which make the calculation of the discrete logarithm more efficient.
+I've also found a writeup of a similar challange from the BSidesSF2020 CTF, where the Pohlig-Hellman algorithm is used to calculate the discrete logarithm and find the correct (d,N) pair. https://blog.skullsecurity.org/2020/bsidessf-ctf-choose-your-own-keyventure-rsa-debugger-challenge. This seems to be the solution for our problem. So I've decided to implement this in python (props to https://blog.skullsecurity.org/2020/bsidessf-ctf-choose-your-own-keyventure-rsa-debugger-challenge)
+
+The Pohlig-Hellman algorithm calculates the discrete log from C^d mod N = M, if the order of the Group is smooth (https://en.wikipedia.org/wiki/Smooth_number).
+The Plan is to calculate P-1 and Q-1 with very small primes factors such that P,Q are prime.
+Then we find the discrete log from C^d mod N = C.
+N must be at least as big as M, because C^d mod N = M. If N is smaller then M, the result of C^d mod N could never be equal M.
+
+Here is the script I've used to calculate a correct key:
+
+```
+import math
+import Crypto.PublicKey
+import Crypto.PublicKey.RSA as rsa
+from math import gcd
+from Crypto.Util.number import *
+import gmpy2
+import OpenSSL.crypto as crypto
+import Crypto.Util.number as number
+import time
+import random
+import Crypto.Util.number as num
+import sympy.ntheory as sym
+
+#choose Q = 2 as first prime -> just calculate smooth number P-1
+q = 2
+
+M = 1067267517149537754067764973523953846272152062302519819783794287703407438588906504446261381994947724460868747474504670998110717117637385810239484973100105019299532993569
+C = 6453808645099481754496697330465
+print("M (kind answer): {}".format(M))
+print("C (Quak): {}".format(C))
+
+sizeN = math.log2(M)/math.log2(2)
+primes = [i for i in range(2,100000) if num.isPrime(i)]
+
+#calulate a smooth number of at least size "sizeNumber"
+def calcSmoothNumberOfAtLeast(sizeNumber):
+    p = 2
+    l = [2]
+    while(math.log2(p)/math.log2(2) < sizeNumber):
+        n = random.choice(primes)
+        l.append(n)
+        p = p * n
+        #print(p)
+    #print("candidate : {}".format(p))
+    return p, l
+
+#find prime p with p-1 smooth
+def calculateP(size):
+    p = 1
+    while(not num.isPrime(p)):
+        cand, l = calcSmoothNumberOfAtLeast(size) 
+        p = cand + 1
+    return p, l
+
+p, l = calculateP(sizeN)
+N = p * q
+phi = (p-1)*(q-1)
+d = sym.discrete_log(N,M,C)
+print("N : {}".format(N))
+print("q : {}".format(q))
+print("p : {}".format(p))
+print("d : {}".format(d))
+assert(gmpy2.powmod(C, d, N)==M)
+
+e = gmpy2.divm(1,d,phi)
+d = int(d)
+e = int(e)
+
+#export key
+key = rsa.construct((N,e,d,p,q))
+print(key)
+f = open('final.pem', 'wb')
+f.write(key.exportKey('PEM'))
+f.close()
+```
+
+The script may need to run more frequently to find a key.
+After creating a key with this script, we can call the script on the server with the given netcat command and pass our base64 encoded script. 
+The server asks for a message, but this can be ignored.
+After passing the base64 encoded key, the server responses with the flag
+
+![](writeupfiles/RSAService.png)
+
+**Flag: CSCG{下一家烤鴨店在哪裡？}**
 
 
