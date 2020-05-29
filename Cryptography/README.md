@@ -179,7 +179,7 @@ You can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and onl
 The public exponent e is the same for all three public keys (**e = 3**).
 
 After some research i found an attack for this situation.
-So i started to implement the Hastads Attack (broadcast attack):
+So I've started to implement the **Hastads Attack (broadcast attack)**:
 
 ```
 import gmpy2
