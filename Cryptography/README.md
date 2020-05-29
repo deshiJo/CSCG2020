@@ -178,10 +178,8 @@ You can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and onl
 
 The public exponent e is the same for all three public keys (**e = 3**).
 
-After some research i found an attack for our situation.
-So i started to implement the Hastads Attack:
-
-I have used the following python script:
+After some research i found an attack for this situation.
+So i started to implement the Hastads Attack (broadcast attack):
 
 ```
 import gmpy2
@@ -243,7 +241,7 @@ Executing this script, will result in the following message, containing the flag
 
 Flag: **CSCG{ch1nes3\_g0vernm3nt\_h4s\_n0\_pr0blem\_w1th\_c0ron4}**
 
-This attack is possible because of the small exponent e = 3. To avoid this issue, a higher exponent should be used, like 65637.
+This attack is possible because of the small exponent e = 3. To avoid this issue, a higher exponent should be used, like **e = 65637**.
 
 
 ## RSA Service
