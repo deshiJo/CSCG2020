@@ -303,7 +303,7 @@ M^d = C mod N, where C = **"Quark! Quack!"** and M = **"Hello! Can you give me t
 
 My first try was to choose d and calculate N from it. The resulting N was so big and i could not get the primefactors to calculte q,p,phi(N),e. But I've thought that my approach must be correct and i have to calculate the key (N,d) such that C^d mod N = M.
 After a pause of one or two weeks, I've thought again about the problem and I've came up with the idea to swap the order of my calculation. What if i choose an N and caclulate d with the discrete logarithm or another method. 
-So i've done some reasearch on attacking RSA by calulating the private exponent d. On Wikipedia lists some algorithms, which make the calculation of the discrete logarithm more efficient.
+So i've done some reasearch on attacking RSA by calulating the private exponent d. Wikipedia lists some algorithms, which make the calculation of the discrete logarithm more efficient.
 I've also found a writeup of a similar challange from the BSidesSF2020 CTF, where the Pohlig-Hellman algorithm is used to calculate the discrete logarithm and find the correct (d,N) pair. https://blog.skullsecurity.org/2020/bsidessf-ctf-choose-your-own-keyventure-rsa-debugger-challenge. This seems to be the solution for our problem. So I've decided to implement this in python (props to https://blog.skullsecurity.org/2020/bsidessf-ctf-choose-your-own-keyventure-rsa-debugger-challenge)
 
 The Pohlig-Hellman algorithm calculates the discrete log from C^d mod N = M, if the order of the Group is smooth (https://en.wikipedia.org/wiki/Smooth_number).
@@ -330,6 +330,8 @@ import sympy.ntheory as sym
 #choose Q = 2 as first prime -> just calculate smooth number P-1
 q = 2
 
+# C = "Quack! Quack!"
+# M = "Hello! Can you give me the flag, please? I would really appreciate it!"
 M = 1067267517149537754067764973523953846272152062302519819783794287703407438588906504446261381994947724460868747474504670998110717117637385810239484973100105019299532993569
 C = 6453808645099481754496697330465
 print("M (kind answer): {}".format(M))
