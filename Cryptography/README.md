@@ -31,12 +31,12 @@ and the public exponent
 **e = 65537**
 
 The RSA encryption works as follows:
-    1. chosen two prime p, q we calculate N = p*q
-    2. We calculate the modulus qhi(N) = (p-1)*(q-1)
-    3. Now chose 3 <= e < phi(N) and calculate d with 1 = e * d mod phi(N)
-    4. The public key is now (e,N) and the private key is now (d,N). 
-    5. ciphertexts c are calulated with: c = plaintext^e mod N
-    6. decrypt a ciphertext c with: plaintext = c^d mod N 
+1. chosen two prime p, q we calculate N = p*q
+2. We calculate the modulus qhi(N) = (p-1)*(q-1)
+3. Now chose 3 <= e < phi(N) and calculate d with 1 = e * d mod phi(N)
+4. The public key is now (e,N) and the private key is now (d,N). 
+5. ciphertexts c are calulated with: c = plaintext^e mod N
+6. decrypt a ciphertext c with: plaintext = c^d mod N 
 
 If we know the modulus phi(N), we can calulate the inverse element of e, which is d. Thus we can calulate the private key if we know phi(N). 
 
