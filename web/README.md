@@ -59,6 +59,8 @@ We can see the `flag.php` file, so we are one step away from the flag. By doing 
 
 ![](writeupfiles/Flag.png)
 
+Flag: **CSCG{G3tting\_RCE\_0n\_w3b\_is\_alw4ys\_cool}**
+
 ## StayWoke Shop
 
 **Challenge**
