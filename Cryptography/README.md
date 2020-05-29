@@ -148,11 +148,103 @@ print(number.long_to_bytes(plaintext))
 
 **Challenge**
 
+This is an introductory challenge for beginners which want to dive into the world of Cryptography. The three stages of this challenge will increase in difficulty.
+
+After a new potentially deadly disease first occurring in Wuhan, China, the Chinese Corona Response Team sends messages to the remainder of the world. However, to avoid disturbing the population, they send out this message encrypted.
+
+We have intercepted all messages sent by the Chinese government and provide you with the public keys found on the governments' website.
+
+Please, find out if we are all going to die!
+
+
+This time we get one file **"intercepted-messages.txt"**, which contains multiple messages and three different public key files.
+The messages in the file **"intercepted-messages.txt"** seems to encrypted with the three different public keys.
+
 
 **Solution**
 
 
-Flag: 
+
+The description of the challange and the fact, that we have three messages here and three public keys, with the same exponent e, made me immediately think of the chinese reminder theorem (for more information look at https://en.wikipedia.org/wiki/Chinese_remainder_theorem).
+
+I have used the following commands to extract the modolus N for all three public key files: 
+
+```
+HEX_MODULUS=$(openssl rsa -pubin -in pubkey.pem -modulus | grep 'Modulus=' |  cut -d'=' -f 2)
+echo $HEX_MODULUS
+```
+
+You can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and online converters for **"pem to hex"** and **"hex to decimal"**, to get the modulus as a decimal number (https://holtstrom.com/michael/tools/hextopem.php and https://www.rapidtables.com/convert/number/hex-to-decimal.html)
+
+The public exponent e is the same for all three public keys (**e = 3**).
+
+After some research i found an attack for our situation.
+So i started to implement the Hastads Attack:
+
+I have used the following python script:
+
+```
+import gmpy2
+import os
+import Crypto.Util.number as number
+import re
+
+N_germany = 13368388890946686131727968139222647635627171995393331225756908262294343216259723081458150905003600322756476137516299938365001972798137046621672975975457070465770187049834603521354462199081700902700733323087201964703391196426066952717511505120664658507099276380167252844734836468387820963170177521935571096868999638202790415914397116993003197932961837711222659120426461631108658146330240545816025557486272830688061978425683447522103977339616076727857816034089500594682018085999092378789197039633371210351470521621878994691517983319668541047042031499811379908242466040735576388227260217406960791406632454767045448789863
+N_russia = 18343717802716940630601940481023526351437486074120550591161058762020703345710367605696446334690825248791560509373517279950125583944976720622084902078751153032339436688975255343139180338681178127688700797071320999813387670292350135483485169318320316776584245519471849328634745109353977968597175721348420576770527793000136160877295577014905354451575371196006765377541964045640054268423795610241643005381587433138330817893094851452345761462684724873155990606241842996499888181450611803912139827073505685135888393196549213527418583778495818537291115829823762105372358484486446314835437285354604977091862400207219042791731
+N_USA = 14463626602170229427356167809091927075048214837573339781774138582390190263460223568524802570585480435667949138330700031482283411314199309061664373861923286634420548935259474128834717819970239283387732315996647938605905994532994027238099470750924616969478147212529380894358056424265545387574975098446117146942068553320197224781384410276446833888437566192029289304444125818681142352673878184276408904704077528699342956063922184456200815444422094356292649411256904543442078043661428831462400371961179888731725665328211651272084619341652653674440701885337593085045665899694222470709757866143325441669946933338126683188131
+
+e = 3
+
+#check if all N gcd(n_i,n_j)==1 for all i!=j
+#assert(gmpy2.gcd(N_germany,N_USA)==1)
+#assert(gmpy2.gcd(N_germany,N_russia)==1)
+#assert(gmpy2.gcd(N_USA,N_russia)==1)
+
+#M^3 = C_i mod N_i
+
+# read and split messages
+f = open('intercepted-messages.txt', 'r')
+message = f.read()
+splitted_Messages = re.split(" |\n",message)
+
+filtered_Messages = [ x for x in splitted_Messages if re.match("^[-+]?[0-9]+$",x)]
+message_germany = int(filtered_Messages[0])
+print("Message germany: {}\n".format(message_germany))
+message_usa = int(filtered_Messages[1])
+print("message usa: {}\n".format(message_usa))
+message_russia = int(filtered_Messages[2])
+print("message russia: {}\n".format(message_russia))
+
+N_New = N_germany * N_USA * N_russia
+#print("N = N1 * N2 * N3 : {}".format(N_New))
+
+N1 = N_russia*N_USA
+N2 = N_germany*N_russia
+N3 = N_germany*N_USA
+
+a1 = number.inverse(N1, N_germany)
+a2 = number.inverse(N2, N_USA)
+a3 = number.inverse(N3, N_russia)
+
+#M = (message_germany * a1 * N1 + message_usa * a2 * N2 + message_russia * a3 * N3) % N_New
+t1 = message_germany * a1 * N1
+t2 = message_usa * a2 * N2
+t3 = message_russia *a3 * N3
+
+#M^3 = x
+x = (t1 + t2 + t3) % N_New
+plaintext, exact = gmpy2.iroot(x, e)
+print(number.long_to_bytes(plaintext))
+
+```
+
+
+Executing this script, will result in the following message, containing the flag: b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACSCG{ch1nes3_g0vernm3nt_h4s_n0_pr0blem_w1th_c0ron4}'      
+
+Flag: **CSCG{ch1nes3\_g0vernm3nt\_h4s\_n0\_pr0blem\_w1th\_c0ron4}**
+
+This attack is possible because of the small exponent e = 3. To avoid this issue, a higher exponent should be used, like 65637.
+
 
 ## RSA Service
 
