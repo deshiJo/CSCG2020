@@ -13,14 +13,14 @@ For this challenge we get an encrypted message **"message.txt"** and a public ke
 The **"pubkey.pem"**-file is a RSA-public key.
 My first idea was to look at the rsa modulus, maybe weak prime numbers were used.
 
-I have used the following commands to extract the modolus N: 
+The following commands can be used to extract the modolus N: 
 
 ```
 HEX_MODULUS=$(openssl rsa -pubin -in pubkey2.pem -modulus | grep 'Modulus=' |  cut -d'=' -f 2)
 echo $HEX_MODULUS
 ```
 
-You can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and online converters for **"pem to hex"** and **"hex to decimal"**, to get the modulus as a decimal number (https://holtstrom.com/michael/tools/hextopem.php and https://www.rapidtables.com/convert/number/hex-to-decimal.html)
+We can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and online converters for **"pem to hex"** and **"hex to decimal"**, to get the modulus as a decimal number (https://holtstrom.com/michael/tools/hextopem.php and https://www.rapidtables.com/convert/number/hex-to-decimal.html)
 
 ![](writeupfiles/pemfile.png)
 
@@ -90,14 +90,14 @@ For this challenge we get an encrypted message **"message.txt"** and a public ke
 The **"pubkey.pem"**-file is a RSA-public key.
 This challenge is similar to "Intro to Crypto 1".
 
-I have used the following commands to extract the modolus N: 
+The following commands can be used to extract the modolus N: 
 
 ```
 HEX_MODULUS=$(openssl rsa -pubin -in pubkey2.pem -modulus | grep 'Modulus=' |  cut -d'=' -f 2)
 echo $HEX_MODULUS
 ```
 
-You can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and online converters for **"pem to hex"** and **"hex to decimal"**, to get the modulus as a decimal number (https://holtstrom.com/michael/tools/hextopem.php and https://www.rapidtables.com/convert/number/hex-to-decimal.html)
+We can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and online converters for **"pem to hex"** and **"hex to decimal"**, to get the modulus as a decimal number (https://holtstrom.com/michael/tools/hextopem.php and https://www.rapidtables.com/convert/number/hex-to-decimal.html)
 
 We get the following two numbers:
 
@@ -117,7 +117,7 @@ Knowing **d** allows us to decrypt the given message.txt (d is the unknown part 
 As described above, for decrypting a message we have to calculate: **plaintext = ciphertext^d mod N**
 Now if we convert the result into a string we get the flag: **CSCG{Ok,\_next\_time\_I\_choose\_p\_and\_q\_random...}**
 
-I have used the following python script to calculate the flag:
+The following python script can be used to calculate the flag:
 
 ```
 import gmpy2
@@ -167,7 +167,7 @@ The messages in the file **"intercepted-messages.txt"** seems to encrypted with 
 
 The description of the challange and the fact, that we have three messages here and three public keys, with the same exponent e, made me immediately think of the chinese reminder theorem (for more information look at https://en.wikipedia.org/wiki/Chinese_remainder_theorem).
 
-I have used the following commands to extract the modolus N for all three public key files: 
+The following commands can be used to extract the modolus N for all three public key files: 
 
 ```
 HEX_MODULUS=$(openssl rsa -pubin -in pubkey.pem -modulus | grep 'Modulus=' |  cut -d'=' -f 2)
@@ -179,7 +179,7 @@ You can also use **"openssl rsa -inform PEM -pubin -text < pubkey.pem"** and onl
 The public exponent e is the same for all three public keys (**e = 3**).
 
 After some research i found an attack for this situation.
-So I've started to implement the **Hastads Attack (broadcast attack)**:
+The following script is a python implementation of the **Hastads Attack (broadcast attack)**:
 
 ```
 import gmpy2
