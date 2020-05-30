@@ -47,7 +47,7 @@ This allows us to extract the PNG with
 volatilty -f memory.dmp --profile=WinXPSP2x86 dumpfiles -Q 0x00000000017c90e8 --dump-dir=./
 ```
 
-![](writeupfiles/fakeflag.png)
+![](writeupfiles/fakeFlag.png)
 
 The image contains a flags: **CSCG{fOr3n51c\_1ntrO\_cOpy\_4nd\_p45t3\_buff3r\_1n\_xp}**
 Unfortunatelly I've could not submit the Flag and the organizers later published that this is a flag which was intended for an older version of this challenge. 
@@ -129,7 +129,11 @@ So the process **CSCG_Delphi.exe** seems to be a kind of crackme challenge and t
 So i started ghidra and start reversing. I also downloaded the Program "IDR" and "DeDe" which can give me some missing symbols of the binary and could help with the decompilation.
 The intersting function is the **Button1Click** function which obviously contains our flag.
 ::ghidra screenshot:::
-When using **"strings CSCG_Delphi.exe"** there are strings nearby a function called "TIdHashMessageDigests". Coping the strings into a hash cracker (https://hashes.com/en/decrypt/hash) results in these strings:
+When using **"strings CSCG_Delphi.exe"** there are strings nearby a function called "TIdHashMessageDigests". 
+
+![](writeupfiles/Hashes.png)
+
+Coping the strings into a hash cracker (https://hashes.com/en/decrypt/hash) results in these strings:
 
 ```
 1efc99b6046a0f2c7e8c7ef9dc416323:dl0
