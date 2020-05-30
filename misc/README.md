@@ -57,7 +57,7 @@ volatilty -f memory.dmp --profile=WinXPSP2x86 dumpfiles -Q 0x00000000017c90e8 --
 ![](writeupfiles/fakeFlag.png)
 
 The image contains a flags: **CSCG{fOr3n51c\_1ntrO\_cOpy\_4nd\_p45t3\_buff3r\_1n\_xp}**
-Unfortunatelly I've could not submit the Flag and the organizers later published that this is a flag which was intended for an older version of this challenge. 
+Unfortunatelly the Flag was wrong and the organizers later published that this is a flag which was intended for an older version of this challenge. 
 
 **Second Flag:**
 
