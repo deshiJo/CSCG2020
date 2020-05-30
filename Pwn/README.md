@@ -217,6 +217,16 @@ void AAAAAAAA() {
         _exit(0);
     }
 }
+
+void main(int argc, char* argv[]) {
+	  ignore_me_init_buffering();
+	  ignore_me_init_signal();
+
+    check_password_stage1();
+
+    welcome();
+    AAAAAAAA();
+}
 ```
 
 Our goal is to execute the **WINguardium\_leviosa** function, which calls **system("/bin/sh")**. This system call will result in a shell on the server.
@@ -343,7 +353,7 @@ The script leaks an address of an instruction from the main method and also the 
 The calculated difference of this instruction and **WINguardium\_leviosa()** (calculated with GDB) is substracted from the leaked address, to get the address of **WINguardium\_leviosa()**.
 Now we can use the buffer overflow from **AAAAAAAA()**, to place the leaked canary and override the return address of this function with the calculated **WINguardium\_leviosa()** address.
 
-This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW_PRACTICE_MORE}**
+This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW\_GET\_VOLDEMORT}**
 
 ![](writeupfiles/pwn2Result.png)
 
