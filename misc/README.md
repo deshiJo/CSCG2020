@@ -206,6 +206,9 @@ To work around this problem i changed the preprocessing of the image and the con
 (This is just a snipped of the code)
 
 ```
+.
+.
+.
 
 # Load the image and convert it to grayscale
     kernel = np.ones((2,2),np.uint8)
@@ -250,6 +253,11 @@ for contour in contours:
         print("wrong length")
         cv2.rectangle(gray, (x - 2, y - 2), (x + w + 4, y + h + 4), (0, 255, 0), 1)
         continue
+
+.
+.
+.
+
 ```
 
 Now the wrapper can be used to calculate the captchas of the challenge. This can take some time, dependent of the accuracy of the neuronal network.
