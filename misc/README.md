@@ -53,10 +53,9 @@ I rememerd that there is a blog post about a machine learning approach for solvi
 I found it at **https://medium.com/@ageitgey/how-to-break-a-captcha-system-in-15-minutes-with-machine-learning-dbebb035a710**
 This approach extract each letter from a labeled captcha file to train a neuronal network.
 
-!!! Vorraussetung labeled data!!
 To use this approach we need labeled trainings data, but luckily the challenge give us the right answer for a captcha, if we fail. Thus we can create a labeled set of trainings data.
 This seems to be a great solution for this problem and maybe we can learn something new.
-The code for the learning algorithm can be downloaded from the page so we only have to get some training data to train our own neuronal network.
+The code for the learning algorithm (**extract\_single\_letters\_from\_captchas.py**, **solve_captchas_with_model.py**, **train_model.py**) can be downloaded from the page so we only have to get some training data to train our own neuronal network.
 I wrote a wrapper in python which call different functions, like downloading the trainingsdata set or start the captcha calulation with the code we can get from the website ( **https://medium.com/@ageitgey/how-to-break-a-captcha-system-in-15-minutes-with-machine-learning-dbebb035a710** ).
 
 ```
@@ -200,8 +199,9 @@ if __name__=='__main__':
 Our set of trainingsdata are captchas with the correct captcha solution as file name. If we have enough sample captchas, we can use the **extract\_single\_letters\_from\_captchas.py** to extract each letter from the capchas and save this image in a single image. This image is also labled with the correct name. Then we can train the neuronal network with **train_model.py**.
 Now we can use our writte script to get the captchas we have to solve and call **solve_captchas_with_model.py** to get the correct answer.
 
-We also have to edit the **extract\_single\_lettser\_from\_captchas.py** and **solve_captchas_with_model.py**, because the solver had some problems with some letters. The letter extraction script calculates a contour for each letter in the captch, if this contour contains multiple letters or we have to much contours (i.e the small letter "i" caused to many contours). 
-The content within the contour is then saved in a new labled file. Thus, if the contours are inncorect, our trainingsdata contain wrong labled data.
+We also have to edit the **extract\_single\_lettser\_from\_captchas.py** and **solve_captchas_with_model.py**, because the solver had some problems with some letters. The letter extraction script calculates a contour for each letter in the captch.
+The content within the contour is then saved in a new labled file.
+If this contour contains multiple letters or we have to much contours (i.e the small letter "i" caused to many contours), our trainingsdata can contain wrong labled data.
 To work around this problem i changed the preprocessing of the image and the contour calculation in **extract\_single\_lettser\_from\_captchas.py** and **solve_captchas_with_model.py**.
 (This is just a snipped of the code)
 
