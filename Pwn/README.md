@@ -53,7 +53,7 @@ void main(int argc, char* argv[]) {
 ```
 
 Our goal is to execute the **WINguardium\_leviosa** function, which calls **system("/bin/sh")**. This system call will result in a shell on the server.
-The function AAAAAAAAA() contains a gets() call, which is vulnerable for a buffer overflow. So if we can place our own code somewhere we can jump there by overwriting the return address from AAAAAAAAA().
+The function **AAAAAAAAA()** contains a gets() call, which is vulnerable for a buffer overflow. So if we can place our own code somewhere we can jump there by overwriting the return address from **AAAAAAAAA()**.
 Unfortunately there are multple security mechanisms activated. Non execution bit is set, so we can't place shellcode on the stack and also PIE is enable, so we need a leak from the memory to calculate the Address of the function **WINguardium\_leviosa()**
 ```
     Arch:     amd64-64-little
@@ -157,6 +157,11 @@ Now we can use the buffer overflow from **AAAAAAAA()**, to override the return a
 This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW_PRACTICE_MORE}**
 
 ![](writeupfiles/pwn1Result.png)
+
+
+To avoid this exloit, secure functions can be used. Like **fgets()** instead of **gets()**, or a boundary check in general can be usefull to avoid buffer overflows.
+The format string attack, can be avoided with correct usage of format strings, like **printf("%s", message)** instead of **printf(message)**.
+
 
 ## Intro to Pwn 2
 
