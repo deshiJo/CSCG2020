@@ -23,6 +23,8 @@ Now we know that we need to use the profile **"WinXPSP2x86"**.
 The next step is to examine the memroy dump. We can use multiple plugins from volatility to examine the memory.
 For example **pslist/pstree** to see the processes were running, when the memory dump was created.
 
+![](writeupfiles/processes.png)
+
 The challenge description talks about an encryption. So we can look closer on the processes CSCG_Delphi.exe and TrueCrypt.exe.
 But also the mspaint.exe could be interesting.
 We can dump these processes and look into them 
