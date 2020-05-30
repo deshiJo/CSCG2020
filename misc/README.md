@@ -16,7 +16,7 @@ Now we know that we need to use the profile **"WinXPSP2x86"**.
 The next step is to examine the memroy dump. We can use multiple plugins from volatility to examine the memory.
 For example **pslist/pstree** to see the processes were running, when the memory dump was created.
 Image
-Some of the processes are interesting. The challenge description talks about an encryption. So we can look closer on the processes CSCG_Delphi.exe and TrueCrypt.exe.
+The challenge description talks about an encryption. So we can look closer on the processes CSCG_Delphi.exe and TrueCrypt.exe.
 But also the mspaint.exe could be interesting.
 We can dump these processes and look into them 
 ```
@@ -25,14 +25,15 @@ volatility -f memory.dmp --profile=WinXPSP2x86 procdump -p [PID])
 We can also dump the memory and analize these.
 
 **First Flag (fake flag)**:
-After dumping the processes and the corresponding memory, I've started with a simple strings command on the memory.
-In the **CSCG_Delphi.exe** i found something interesting. Using 
+
+After dumping the processes and the corresponding memory, we can start with a simple strings command on the memory.
+Using 
 
 ```
 strings 1920.dmp | grep CSCG
 ```
 
-on the memory dump of the process, we see that there is a file **"flag.PNG"**. If we can extract this file, we may receive a flag.
+on the memory dump of the process **CSCG_Delphi.exe**, we can see that there is a file **"flag.PNG"**. If we can extract this file, we may receive a flag.
 So i used 
 
 ```
@@ -45,6 +46,8 @@ This allows us to extract the PNG with
 ```
 volatilty -f memory.dmp --profile=WinXPSP2x86 dumpfiles -Q 0x00000000017c90e8 --dump-dir=./
 ```
+
+![](writeupfiles/fakeflag.png)
 
 The image contains a flags: **CSCG{fOr3n51c\_1ntrO\_cOpy\_4nd\_p45t3\_buff3r\_1n\_xp}**
 Unfortunatelly I've could not submit the Flag and the organizers later published that this is a flag which was intended for an older version of this challenge. 
@@ -68,11 +71,11 @@ volatility -f memory.dmp --profile=WinXPSP2x86 connscan
 volatility -f memory.dmp --profile=WinXPSP2x86 sockets
 ```
 
-I've also loaded the memory dumps of the three processes in gimp, to see if i can found something on the screen. But i only saw an open mspaint process which could have been used to create the fake flag, I've already found.
+We can also load the memory dumps of the three processes in gimp, to see if i can found something on the screen. But there was only an open mspaint process which could have been used to create the fake flag.
 
 The file **TrueCrypt.exe** is also interesting. Maybe we have somewhere an encrypted file which contains the flag.
-So again I've used filescan to look at the file handles in the memory dump.
-There was a file named **"\Device\TrueCryptVolumeE\flag.zip"** which could be interesting.
+So again we can use filescan to look at the file handles in the memory dump.
+There was a file named **"\Device\TrueCryptVolumeE\flag.zip"**.
 This seems to be the right file, but we need a password to extract the contained flag.
 With 
 
@@ -103,7 +106,7 @@ Container            Path: \??\C:\Program Files\TrueCrypt\true.dmp
 Device               TrueCrypt at 0x816d4be0 type FILE_DEVICE_UNKNOWN
 ```
 
-There is a file named **"password.txt"**. 
+The output contains a file named **"\Device\TrueCryptVolumeE\password.txt"**. 
 Again we dump the file and extract its content. 
 
 ```
@@ -137,8 +140,7 @@ c129bd7796f23b97df994576448caa23:l00hcs
 ```
 
 Also the Button1Click function seems to counter the number of underscore symbols and also uses a string reversing function. 
-::image underscore counter::
-::image reverse string::
+![](writeupfiles/ReverseString.png)
 
 Now the solution is pretty clear. If we reverse the strings from the cracked hashes and concatinating them, we get the flag:
 **Flag: CSCG{0ld_sch00l_d31ph1_cr4ck_m3!}**
