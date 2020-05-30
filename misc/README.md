@@ -135,7 +135,7 @@ The challenge description of the missing flag and the clipboard of the memory du
 
 So the process **CSCG_Delphi.exe** seems to be a kind of crackme challenge and the password is the flag.
 So i started ghidra and start reversing. I also downloaded the Program "IDR" and "DeDe" which can give me some missing symbols of the binary and could help with the decompilation.
-The intersting function is the **Button1Click** function which obviously contains our flag.
+The interesting function is the **Button1Click** function, which obviously contains our flag.
 
 ![](writeupfiles/GhidraScreenshot.png)
 
@@ -153,7 +153,7 @@ c129bd7796f23b97df994576448caa23:l00hcs
 017efbc5b1d3fb2d4be8a431fa6d6258:1hp13d
 ```
 
-Also the Button1Click function seems to counter the number of underscore symbols and also uses a string reversing function. 
+Also the Button1Click function seems to uses a string reversing function. 
 
 ![](writeupfiles/ReverseString.png)
 
