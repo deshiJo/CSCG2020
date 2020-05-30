@@ -167,6 +167,8 @@ The format string attack, can be avoided with correct usage of format strings, l
 
 **Challenge**
 
+This is a introductory challenge for exploiting Linux binaries with memory corruptions. Nowodays there are quite a few mitigations that make it not as straight forward as it used to be. So in order to introduce players to pwnable challenges, LiveOverflow created a video walkthrough of the first challenge. An alternative writeup can also be found by 0x4d5a. More resources can also be found here.
+
 **Solution**
 
 This challenge we get a script running on a server. 
