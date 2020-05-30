@@ -113,8 +113,8 @@ Again we dump the file and extract its content.
 volatility -f memory.dmp --profile=WinXPSP2x86 filescan | grep .txt
 ```
 
-IMAGE
-Image
+![](writeupfiles/PasswordImage.png)
+
 Now we have the password to extract the flag:
 **CSCG{c4ch3d\_p455w0rd\_fr0m\_0p3n\_tru3\_cryp1\_c0nt41n3r5}**
 
