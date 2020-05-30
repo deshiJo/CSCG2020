@@ -19,26 +19,32 @@ Image
 Some of the processes are interesting. The challenge description talks about an encryption. So we can look closer on the processes CSCG_Delphi.exe and TrueCrypt.exe.
 But also the mspaint.exe could be interesting.
 We can dump these processes and look into them 
-
-> volatility -f memory.dmp --profile=WinXPSP2x86 procdump -p [PID])
-
+```
+volatility -f memory.dmp --profile=WinXPSP2x86 procdump -p [PID])
+```
 We can also dump the memory and analize these.
 
 **First Flag (fake flag)**:
 After dumping the processes and the corresponding memory, I've started with a simple strings command on the memory.
 In the **CSCG_Delphi.exe** i found something interesting. Using 
 
-> "strings 1920.dmp | grep CSCG" 
+```
+strings 1920.dmp | grep CSCG
+```
 
 on the memory dump of the process, we see that there is a file **"flag.PNG"**. If we can extract this file, we may receive a flag.
 So i used 
 
-> "volatilty -f memory.dmp --profile=WinXPSP2x86 filescan | grep PNG" 
+```
+volatilty -f memory.dmp --profile=WinXPSP2x86 filescan | grep PNG
+```
 
 to receive the physical offset of the file handle. 
 This allows us to extract the PNG with 
 
-> "volatilty -f memory.dmp --profile=WinXPSP2x86 dumpfiles -Q 0x00000000017c90e8 --dump-dir=./"
+```
+volatilty -f memory.dmp --profile=WinXPSP2x86 dumpfiles -Q 0x00000000017c90e8 --dump-dir=./
+```
 
 The image contains a flags: **CSCG{fOr3n51c\_1ntrO\_cOpy\_4nd\_p45t3\_buff3r\_1n\_xp}**
 Unfortunatelly I've could not submit the Flag and the organizers later published that this is a flag which was intended for an older version of this challenge. 
@@ -47,18 +53,20 @@ Unfortunatelly I've could not submit the Flag and the organizers later published
 
 I investigated further with different commands
 
-> **View the desktop:**
+```
+**View the desktop:**
 volatilty -f memory.dmp --profile=WinXPSP2x86 screenshot --dump-dir=./
 
-> **view the commandline**
+**view the commandline**:
 volatility -f memory.dmp --profile=WinXPSP2x86 cmdline
 
-> **show the users:**
+**show the users:**:
 volatility -f memory.dmp --profile=WinXPSP2x86 printkey -K "SAM\Domains\Account\Users\Names"
 
-> **and showing the network communications with:**
+**and showing the network communications with:**
 volatility -f memory.dmp --profile=WinXPSP2x86 connscan
 volatility -f memory.dmp --profile=WinXPSP2x86 sockets
+```
 
 I've also loaded the memory dumps of the three processes in gimp, to see if i can found something on the screen. But i only saw an open mspaint process which could have been used to create the fake flag, I've already found.
 
@@ -67,8 +75,10 @@ So again I've used filescan to look at the file handles in the memory dump.
 There was a file named **"\Device\TrueCryptVolumeE\flag.zip"** which could be interesting.
 This seems to be the right file, but we need a password to extract the contained flag.
 With 
-> "volatility -f memory.dmp --profile=WinXPSP2x86 truecryptsummary"
 
+```
+"volatility -f memory.dmp --profile=WinXPSP2x86 truecryptsummary"
+```
 some usefull information can be shown:
 ```
 Volatility Foundation Volatility Framework 2.6
@@ -96,7 +106,9 @@ Device               TrueCrypt at 0x816d4be0 type FILE_DEVICE_UNKNOWN
 There is a file named **"password.txt"**. 
 Again we dump the file and extract its content. 
 
-> volatility -f memory.dmp --profile=WinXPSP2x86 filescan | grep .txt
+```
+volatility -f memory.dmp --profile=WinXPSP2x86 filescan | grep .txt
+```
 
 IMAGE
 Image
