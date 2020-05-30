@@ -123,12 +123,13 @@ Now we have the password to extract the flag:
 So because the first flag we found was just a fake flag, we have to start investigating again. 
 The challenge description of the missing flag and the clipboard of the memory dump give us a hint where we should look at:
 **"R3m3mb3r th3 g00d 0ld 1337 d4y5, wh3r3 cr4ckm35 4r3 wr1tt3n 1n l4ngu4g35, wh1ch 4r3 d34d t0d4y. H4v3 fun t0 f1nd th15 5m4ll g3m 1n th3 m3m0ry dump."**
-::: Image clipboard ::: 
 
 So the process **CSCG_Delphi.exe** seems to be a kind of crackme challenge and the password is the flag.
 So i started ghidra and start reversing. I also downloaded the Program "IDR" and "DeDe" which can give me some missing symbols of the binary and could help with the decompilation.
 The intersting function is the **Button1Click** function which obviously contains our flag.
-::ghidra screenshot:::
+
+![](writeupfiles/GhidraScreenshot.png)
+
 When using **"strings CSCG_Delphi.exe"** there are strings nearby a function called "TIdHashMessageDigests". 
 
 ![](writeupfiles/Hashes.png)
@@ -144,6 +145,7 @@ c129bd7796f23b97df994576448caa23:l00hcs
 ```
 
 Also the Button1Click function seems to counter the number of underscore symbols and also uses a string reversing function. 
+
 ![](writeupfiles/ReverseString.png)
 
 Now the solution is pretty clear. If we reverse the strings from the cracked hashes and concatinating them, we get the flag:
