@@ -75,11 +75,11 @@ The class **PlanarMovementParameters** has two interesting fields: **speed** and
 Now the plan is to use CheatEngine to set a breakpoint at a method from **NormalMovement**, to get the address of the corresponding **NormalMovement** object (address is placed in the rcx register, when the method is called).
 Then we can use CheatEngine to change the field in the **PlanarMovementParameters** object used by **NormalMovement**, which contains the **speed** field.
 
-We can use the method **ProcessExternalMovement** which is triggered every second, to get the address of the **NormalMovement** object. To get the address for this method, we can use **Add Address Manually** and choose **getAddress('GameAssembly.dll')+0x6BDDC0** as address (The IL2CppDumper output contains the offset of methods and fields we use here)
+We can use the method **ProcessExternalMovement** which is triggered every second, to get the address of the **NormalMovement** object. To get the address for this method, we can use **Add Address Manually** and choose **getAddress('GameAssembly.dll')+0x6BDDC0** as address (The IL2CppDumper output contains the offset of methods and fields we use here).
 Now we can open the debugger with a right click on this address and set a breakpoint. When the breakpoint is hit, we copy the Address from the RCX register.
 This is the address of the **NormalMovement** object.
 Then open the memory view of CheatEngine and open **Tools-\>Dissect Data/Struct** and paste the address.
-Looking at the Il2CppDumper output, we see the offset of the fields we want to change.
+(The offsets can be found in the IL2CppDumper output)
 
 ![](writeupfiles/Race/ChangeMovementspeed.png)
 
