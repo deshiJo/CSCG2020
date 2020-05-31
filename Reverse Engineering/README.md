@@ -131,8 +131,8 @@ Execute with .NET Core Runtime 2.2 with windows, e.g. dotnet ReMe.dll
 
 We get the files: **ReMe.dll, ReMe.deps.json and ReMe.runtimeconfig.json**.
 
-The dotnet decompiler **ilspy** can be used to decompile **ReMe.dll** (file decompiledReMe.cs in the appendix).
-One of the interesting parts is a string decryption, which seems to be the first flag:
+The dotnet decompiler **ilspy** can be used to decompile **ReMe.dll** (file decompiledReme.cs in the appendix).
+One of the interesting parts is a string decryption, which seems to decrypt the first flag:
 ```
 private static void InitialCheck(string[] args)
 		{
@@ -182,7 +182,7 @@ private static void InitialCheck(string[] args)
 
 ```
 The result from **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))** is compared with the first programm argument. If we pass the correct string, the flag will be printed on the console **Console.WriteLine("There you go. Thats the first of the two flags! CSCG{{{0}}}", args[0]);**.
-The code also contains the encryption and decryption function. So if we copy the parts we need and executes the encryption method, we get the flag.
+The code also contains the encryption and decryption function. If we copy the parts we need and executes the encryption method, we get the flag, without running the whole program.
 We can write a new c# file with just a main method, calling **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))**, and the decryption method itself:
 
 
