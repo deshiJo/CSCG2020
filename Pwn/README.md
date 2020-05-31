@@ -452,6 +452,18 @@ We can abuse the system function from the libc while placing the correct paramet
 The function **welcome()** contains a printf() call, which can be abused for a format string attack. This can leak an address, which help us to calculate the address of **system()** and the stack canary.
 We can calulate the difference of the address from **WINguardium\_leviosa()** and the leaked address with gdb. If we know this difference, we can calculate the address of **WINguardium\_leviosa()** for every execution of the binary, even if PIE is enabled.
 
+To get the correct offsets of the libc functions, we can use the tool **libc-database** (https://github.com/niklasb/libc-database) and the dockerfile from liveoverflow (https://github.com/LiveOverflow/pwn_docker_example/blob/master/ctf/Dockerfile), which uses the same libc as the challenge.
+
+```
+offset___libc_start_main_ret = 0x271e3
+offset_system = 0x00000000000554e0
+offset_dup2 = 0x0000000000111b60
+offset_read = 0x0000000000111260
+offset_write = 0x0000000000111300
+offset_str_bin_sh = 0x1b6613
+
+```
+
 The following exploit gives us a shell on the Server.
 
 ```
@@ -601,3 +613,6 @@ if __name__=='__main__':
     localExploit(winAdr, offset,canary,systemAdr,binShAdr,baseAdr)
 ```
 
+![](writeupfiles/pwn3Result.png)
+
+Flag: **CSCG{VOLDEMORT\_DID\_NOTHING\_WRONG}**
