@@ -508,7 +508,10 @@ namespace ReMe_Inner
 	}
 }
 ```
-We can already read a part from the flag from the line **else if ("CSCG{" + array[0] == "CSCG{n0w" && array[1] == "u" && array[2] == "know" && array[3] == "st4t1c" && array[4] == "and" && CalculateMD5Hash(array[5]).ToLower() == "b72f3bd391ba731a35708bfd8cd8a68f" && array[6] == "dotNet" && array[7] + "}" == "R3333}")**
+We can already read a part from the flag from the following lines 
+```
+else if ("CSCG{" + array[0] == "CSCG{n0w" && array[1] == "u" && array[2] == "know" && array[3] == "st4t1c" && array[4] == "and" && CalculateMD5Hash(array[5]).ToLower() == "b72f3bd391ba731a35708bfd8cd8a68f" && array[6] == "dotNet" && array[7] + "}" == "R3333}")
+```
 
 > CSCG{n0w\_u\_know\_st4t1c\_and_\<Something>\_dotNet\_R3333}
 
