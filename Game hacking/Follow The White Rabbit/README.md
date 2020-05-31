@@ -26,18 +26,20 @@ To find the y-coordination we have to use cheat eninge and search for unknown fl
 So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the number of possible memory addresses of the y-coordination.
 
 Image
+![](writeupfiles/StartSearch.png)
 
 If we have found the correct value, modify this value to teleport our character up and down. 
 By changing the value to **-201**, while stating in front of the hole, the character will reach the bottom of the hole without dying.
 
-
-Image
-
 Now we can follow the rabbit until we reach the flag:
 
-Image
+![](writeupfiles/Flag1.JPG)
 
-**Flag: **
+**Flag: CSCG{data\_mining\_teleport\_or\_gravity\_patch?}**
+
+
+An alternative solution is the open the game ressources in the folder **FollowTheWhiteRabbit\_Data** with **AssetStudio**. 
+When you scroll through the asstes you will also find the flag.
 
 
 ## Follow The White Rabbit - Datamining
