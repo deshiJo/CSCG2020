@@ -85,7 +85,7 @@ Looking at the Il2CppDumper output, we see the offset of the fields we want to c
 
 Now the speed value can be changed and the race is much easier:
 
-![](writeupfiels/Race/Flag.png)
+![](writeupfiles/Race/Flag.png)
 
 **Flag: CSCG{SPEEDH4X\_MAZE\_RUNNER\_BUNNYYYY}**
 
