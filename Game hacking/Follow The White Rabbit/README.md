@@ -22,7 +22,7 @@ So we have multiple solutions here. We can try to hack the game and teleport int
 **CheatEngine** can be helpful here, because it makes memory modification very easy (There are several tutorials for cheat engine, i.e. a video series from liveoverflow about game hacking https://www.youtube.com/watch?v=Pst-4NwY2is&list=PLhixgUqwRTjzzBeFSHXrw9DnQtssdAwgG&index=22)
 
 Our plan is to use cheat engine to find the memory address of the players coordinations. When we find the y-coordination of our playable character, we can modify this value to teleport down to the bottom of the hole. 
-To find the y-coordination we have to use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing, unchanged, etc values.
+To find the y-coordination we have to use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing and unchanged values.
 So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the number of possible memory addresses of the y-coordination.
 
 Image
@@ -165,7 +165,7 @@ After injecting the dll, the scene can be loaded by pressing **F9** (see dll inj
 
 ![](writeupfiles/AfterLoad.png)
 
-Now we have to find the y-coordination of our Character again, to teleport us up to the building. Use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing, unchanged, etc values 
+Now we have to find the y-coordination of our Character again, to teleport us up to the building. Use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing and unchanged values 
 So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the number of possible memory addresses of the y-coordination.
 (There are several tutorials for cheat engine, i.e. a video series from liveoverflow about game hacking https://www.youtube.com/watch?v=Pst-4NwY2is&list=PLhixgUqwRTjzzBeFSHXrw9DnQtssdAwgG&index=22)
 
