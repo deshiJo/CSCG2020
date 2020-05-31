@@ -34,7 +34,7 @@ Now we can open the debugger with a right click on this address and set a breakp
 
 The register RDX is the parameter **\_emoji**. When we change this value to 0xD, a flag emoji pops up and we get our flag:
 
-![](writeupfiles/Emoji/flag.jpg)
+![](writeupfiles/Emoji/flag.JPG)
 
 **Flag: CSCG{Your\_hack\_got\_reported\_to\_authorities!}**
 
