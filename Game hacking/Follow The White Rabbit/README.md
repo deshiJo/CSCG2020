@@ -16,8 +16,6 @@ As the description tells us, we have to follow the white rabbit into a hole.
 When the game starts and we follow the white rabbit, we reach a hole and the rabbit jumps in. 
 Unfortunatelly we are not invincible and we fall to death.
 
-Image
-
 So we have multiple solutions here. We can try to hack the game and teleport into the hole, so we don't have even to fall down. Or we can make us invincible.
 **CheatEngine** can be helpful here, because it makes memory modification very easy (There are several tutorials for cheat engine, i.e. a video series from liveoverflow about game hacking https://www.youtube.com/watch?v=Pst-4NwY2is&list=PLhixgUqwRTjzzBeFSHXrw9DnQtssdAwgG&index=22)
 
@@ -25,7 +23,6 @@ Our plan is to use cheat engine to find the memory address of the players coordi
 To find the y-coordination we have to use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing and unchanged values.
 So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the number of possible memory addresses of the y-coordination.
 
-Image
 ![](writeupfiles/StartSearch.png)
 
 If we have found the correct value, modify this value to teleport our character up and down. 
@@ -36,7 +33,6 @@ Now we can follow the rabbit until we reach the flag:
 ![](writeupfiles/Flag1.JPG)
 
 **Flag: CSCG{data\_mining\_teleport\_or\_gravity\_patch?}**
-
 
 An alternative solution is the open the game ressources in the folder **FollowTheWhiteRabbit\_Data** with **AssetStudio**. 
 When you scroll through the asstes you will also find the flag.
