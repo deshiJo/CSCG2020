@@ -13,7 +13,7 @@ See also: maze.liveoverflow.com
 This is the second game challenge made by Liveoverflow.
 This time we are a white rabbit in an online game and have to solve different challenges in a big maze.
 
-**Solution
+**Solution**
 
 The challenge description points out, that we have to take a look on the emoji function of the game. 
 We can show multiple emojis to other players by pressing one of the number keys of our keyboard.
