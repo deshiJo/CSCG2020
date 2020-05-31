@@ -13,7 +13,7 @@ See also: maze.liveoverflow.com
 This is the second game challenge made by Liveoverflow.
 This time we are a white rabbit in an online game and have to solve different challenges in a big maze.
 
-**Solution
+**Solution**
 
 The challenge description points out, that we have to take a look on the emoji function of the game. 
 We can show multiple emojis to other players by pressing one of the number keys of our keyboard.
@@ -25,14 +25,14 @@ Now we can search for the method responsible for showing the emojis.
 
 ![](writeupfiles/Emoji/sendEmoji.png)
 
-This seems to be the right method **public void sendEmoji(ushort \_emoji)**, which is at offset **0x6D5720**.
+This seems to be the right method **"public void sendEmoji(ushort \_emoji)"**, which is at offset **"0x6D5720"**.
 Now the plan is to use CheatEngine to set a breakpoint for this method, and change the parameter to another value.
-To get the address for this method, we can use **Add Address Manually** and choose **getAddress('GameAssembly.dll')+0x6D5720** as address. 
+To get the address for this method, we can use **"Add Address Manually"** and choose **"getAddress('GameAssembly.dll')+0x6D5720"** as address. 
 Now we can open the debugger with a right click on this address and set a breakpoint. Now, if we try to show an emoji, the breakpoint will stop the execution.
 
 ![](writeupfiles/Emoji/breakpoint.png)
 
-The register RDX is the parameter **\_emoji**. When we change this value to 0xD, a flag emoji pops up and we get our flag:
+The register RDX is the parameter **"\_emoji"**. When we change this value to 0xD, a flag emoji pops up and we get our flag:
 
 ![](writeupfiles/Emoji/flag.JPG)
 
