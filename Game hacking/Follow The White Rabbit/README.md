@@ -23,7 +23,7 @@ So we have multiple solutions here. We can try to hack the game and teleport int
 
 Our plan is to use cheat engine to find the memory address of the players coordinations. When we find the y-coordination of our playable character, we can modify this value to teleport down to the bottom of the hole. 
 To find the y-coordination we have to use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing, unchanged, etc values.
-So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the possible memory addresses of the y-coordination.
+So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the number of possible memory addresses of the y-coordination.
 
 Image
 
@@ -48,13 +48,19 @@ It looks like the prison is still under construction on the currently shipped ga
 
 **Solution**
 
+The Challenge give us a complete Unity game.
+
 If we watch the trailer, we can see a building which can't be found in the normal game. The name of the challenge gives us the hint to look into the game data.
 The Programm AssetsStudio, helps us to see which scenes are used by the game. We can load the Folder **FollowTheWhiteRabbit\_Data** to see the different scenes. 
-We can see a scene **level5** which contains objects like ** **.
+We can see a scene and a lot of objects which aren't in the game now.
 
-We can try to load this scene using the SceneLoader from Unity, to load a Scene while we are ingame. This can load the missing building within the scene **level5**, which maybe contain the flag.
+We can try to load this scene using the SceneLoader from Unity, to load a Scene while we are ingame. This can load the missing building, which maybe contain the flag.
+To get more information we can also look into the decompiled **GameAssembly.dll** code, by using **ilspy**. The original code uses the scnene name **"FlagLand"** to load the scenes with the SceneBuilder.
+While looking into the memory with **CheatEngine**, a similar String **"FlagLand_Update"** can be found. This seems to be the "updates" of the game, which is teasered by the game trailer.
 
-To load the scene, the following dll can be used and injected with **CheatEngine**:
+![](writeupfiles/FlagLand.png)
+
+To load the scene, the following dll can be used and injected:
 
 ```
 using System;
@@ -148,18 +154,20 @@ namespace followWhiteRabbit_hack
 }
 ```
 
-To inject the dll use tools like SharpMonoInjector. 
+To inject the dll, we have to compile it (i.e. with VisualStudio) and use a tool like SharpMonoInjector. 
 
 ![](writeupfiles/DLLInject.png)
 
+![](writeupfiles/BeforeLoad.png)
+
 After injecting the dll, the scene can be loaded by pressing **F9** (see dll injection code).
 
-![](writeupfiles/BeforeLoad.png)
 
 ![](writeupfiles/AfterLoad.png)
 
-Now we have to find the y-coordination of our Character again, to teleport us up to the building. Use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing, unchanged, etc values.
-So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the possible memory addresses of the y-coordination.
+Now we have to find the y-coordination of our Character again, to teleport us up to the building. Use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing, unchanged, etc values 
+So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the number of possible memory addresses of the y-coordination.
+(There are several tutorials for cheat engine, i.e. a video series from liveoverflow about game hacking https://www.youtube.com/watch?v=Pst-4NwY2is&list=PLhixgUqwRTjzzBeFSHXrw9DnQtssdAwgG&index=22)
 
 If we have found the correct value, modify this value to teleport our character up and down. 
 
