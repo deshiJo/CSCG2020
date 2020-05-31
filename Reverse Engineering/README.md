@@ -183,7 +183,7 @@ private static void InitialCheck(string[] args)
 ```
 The result from **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))** is compared with the first programm argument. If we pass the correct string, the flag will be printed on the console **Console.WriteLine("There you go. Thats the first of the two flags! CSCG{{{0}}}", args[0]);**.
 The code also contains the encryption and decryption function. If we copy the parts we need and executes the encryption method, we get the flag, without running the whole program.
-We can write a new c# file with just a main method, calling **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))**, and the decryption method itself:
+We can write a new c# file, which contains a main method, calling **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))**, and the decryption method:
 
 
 ```
@@ -257,10 +257,263 @@ Now if we run this programm, we get the flag content **CanIHazFlag?**.
 
 Flag: **CSCG{CanIHazFlag?}**
 
+The security issue here is that the password/key for the encryption is hardcoded in the programm code. Even if the programm uses a secure encyption like aes, we can easily decrypt the flag because of know the key. Thus the encryption is pretty useless at this point. The encryption key should not be in the programm code.
+
+
 ## reme Part 2
 
 **Challenge**
 
+.NET Reversing can't be that hard, right? But I've got some twists waiting for you 😈
+
+Execute with .NET Core Runtime 2.2 with windows, e.g. dotnet ReMe.dll
+
 **Solution**
 
+We get the files: **ReMe.dll, ReMe.deps.json and ReMe.runtimeconfig.json**.
 
+The dotnet decompiler **ilspy** can be used to decompile **ReMe.dll** (file decompiledReme.cs in the appendix).
+The second flag was a bit harder to find, so lets look at the code more presice (see decompiledReme.cs).
+The Program starts with the main method. At first it calls an initialization method. This method is hardly readable so put this aside for now.
+The rest of the main method seems to be interesting:
+1. the intermediate Language representation of the Method "InitialCheck" is loaded as a byte array.
+2. the whole dll executable is loaded into a second byte array called "array".
+3. the String "THIS_IS_CSCG_NOT_A_MALWARE!" is located in the bytearray "array".
+4. a memory Stream starting at the byte behind "THIS_IS_CSCG_NOT_A_MALWARE!" is generated and a third byte array of the length of this stream is generated. 
+5. the content of the memory stream is decrypted with aes, while the bytes of the method "InitialCheck" are used as the encryption key. 
+6. The decrypted result is now loaded as a method "check".
+
+```
+private static void Main(string[] args)
+		{
+			InitialCheck(args);
+			byte[] iLAsByteArray = typeof(Program).GetMethod("InitialCheck", BindingFlags.Static | BindingFlags.NonPublic).GetMethodBody().GetILAsByteArray(); //get Intermediate language of "InitialCheck" as Byte Array
+			byte[] array = File.ReadAllBytes(Assembly.GetExecutingAssembly().Location); //Read all bytes of the currently loaded executable -> array all Bytes 
+			int[] array2 = array.Locate(Encoding.ASCII.GetBytes("THIS_IS_CSCG_NOT_A_MALWARE!"));//locate the String "This_is_..." in the memory of this executable and store the bytes in array2
+			MemoryStream memoryStream = new MemoryStream(array); //create a non-resizable instance of a memory stream based on the bytes of the executable
+			memoryStream.Seek(array2[0] + Encoding.ASCII.GetBytes("THIS_IS_CSCG_NOT_A_MALWARE!").Length, SeekOrigin.Begin); //set the position of memory stream to byte after the String "THIS_IS_CSCG..."
+			byte[] array3 = new byte[memoryStream.Length - memoryStream.Position]; //create new array of size of bytes after "THIS_IS_CSCG..." String and the end
+			memoryStream.Read(array3, 0, array3.Length);//read bytes of array3 
+			byte[] rawAssembly = AES_Decrypt(array3, iLAsByteArray); //decrypt array3 with the bytes of InitialCheck 
+			object obj = Assembly.Load(rawAssembly).GetTypes()[0].GetMethod("Check", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[1]
+			{
+				args
+			});
+		}
+```
+
+Thus, there seems to be another program hidden in the program itself. The main method loads bytes after a string **"THIS\_IS\_CSCG..."** and decrypts these bytes.
+We can again write our own c# programm to get this hidden and encrypted program. We just have to copy the main method (and the necessary program parts) and write the result of the decryption **byte[] rawAssembly = AES_Decrypt(array3, iLAsByteArray); //decrypt array3 with the bytes of InitialCheck** to a file **output.exe**:
+
+```
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Security;
+using System.Security.Cryptography;
+using System.Security.Permissions;
+using System.Text;
+
+namespace decrypt{
+    internal static class ByteArrayRocks
+	{
+		private static readonly int[] Empty = new int[0];
+
+		public static int[] Locate(this byte[] self, byte[] candidate)
+		{
+			if (IsEmptyLocate(self, candidate))
+			{
+				return Empty;
+			}
+			List<int> list = new List<int>();
+			for (int i = 0; i < self.Length; i++)
+			{
+				if (IsMatch(self, i, candidate))
+				{
+					list.Add(i);
+				}
+			}
+			return (list.Count == 0) ? Empty : list.ToArray();
+		}
+
+		private static bool IsMatch(byte[] array, int position, byte[] candidate)
+		{
+			if (candidate.Length > array.Length - position)
+			{
+				return false;
+			}
+			for (int i = 0; i < candidate.Length; i++)
+			{
+				if (array[position + i] != candidate[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private static bool IsEmptyLocate(byte[] array, byte[] candidate)
+		{
+			return array == null || candidate == null || array.Length == 0 || candidate.Length == 0 || candidate.Length > array.Length;
+		}
+	}
+    class Program {
+
+            private static void Main(string[] args)
+            {
+    //			InitialCheck(args);
+                Assembly dll = Assembly.LoadFile("/home/joachim/Schreibtisch/CTF/2020/CSCG/Reversing/Reme/ReMe.dll");
+                //test c# methods
+                //foreach(Type type in dll.GetTypes() {
+                    //MethodInfo[] methodJ = type.GetMethods(); 
+                    //foreach(MethodInfo i in methodJ) {
+                       //Console.WriteLine(i); 
+                    //}
+                //}
+                //Console.WriteLine(dll.GetType("ReMe.Program"));
+                MethodInfo[] methodJ2 = dll.GetType("ReMe.Program").GetMethods(BindingFlags.Static | BindingFlags.NonPublic); 
+                    foreach(MethodInfo i in methodJ2) {
+                        //print all methods in class Program
+                       //Console.WriteLine(i); 
+                    }
+                byte[] iLAsByteArray = dll.GetType("ReMe.Program").GetMethod("InitialCheck", BindingFlags.Static | BindingFlags.NonPublic).GetMethodBody().GetILAsByteArray();
+                //byte[] iLAsByteArray = typeof(Program).GetMethod("InitialCheck", BindingFlags.Static | BindingFlags.NonPublic).GetMethodBody().GetILAsByteArray(); //get Intermediate language of "InitialCheck" as Byte Array
+
+                byte[] array = File.ReadAllBytes("/home/joachim/Schreibtisch/CTF/2020/CSCG/Reversing/Reme/ReMe.dll"); //Read all bytes of the currently loaded executable -> array all Bytes 
+                //Console.WriteLine(Encoding.Default.GetString(array));
+                int[] array2 = array.Locate(Encoding.ASCII.GetBytes("THIS_IS_CSCG_NOT_A_MALWARE!"));//locate the String "This_is_..." in the memory of this executable and store the bytes in array2
+                MemoryStream memoryStream = new MemoryStream(array); //create a non-resizable instance of a memory stream based on the bytes of the executable
+                memoryStream.Seek(array2[0] + Encoding.ASCII.GetBytes("THIS_IS_CSCG_NOT_A_MALWARE!").Length, SeekOrigin.Begin); //set the position of memory stream to byte after the String "THIS_IS_CSCG..."
+                byte[] array3 = new byte[memoryStream.Length - memoryStream.Position]; //create new array of size of bytes after "THIS_IS_CSCG..." String and the end
+                memoryStream.Read(array3, 0, array3.Length);//read bytes of array3 
+                byte[] rawAssembly = AES_Decrypt(array3, iLAsByteArray); //decrypt array3 with the bytes of InitialCheck 
+                File.WriteAllBytes("output.exe", rawAssembly);
+                Console.WriteLine(Encoding.Default.GetString(rawAssembly));
+                Console.WriteLine(Assembly.Load(rawAssembly).GetTypes()[0].GetMethod("Check",BindingFlags.Static | BindingFlags.Public).GetMethodBody());
+                object obj = Assembly.Load(rawAssembly).GetTypes()[0].GetMethod("Check", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[1]
+                {
+                	args
+                });
+            }
+
+		public static byte[] AES_Decrypt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
+		{
+			byte[] result = null;
+			byte[] salt = new byte[8]
+			{
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8
+			};
+			using (MemoryStream memoryStream = new MemoryStream())
+			{
+				using (RijndaelManaged rijndaelManaged = new RijndaelManaged())
+				{
+					rijndaelManaged.KeySize = 256;
+					rijndaelManaged.BlockSize = 128;
+					Rfc2898DeriveBytes rfc2898DeriveBytes = new Rfc2898DeriveBytes(passwordBytes, salt, 1000);
+					rijndaelManaged.Key = rfc2898DeriveBytes.GetBytes(rijndaelManaged.KeySize / 8);
+					rijndaelManaged.IV = rfc2898DeriveBytes.GetBytes(rijndaelManaged.BlockSize / 8);
+					rijndaelManaged.Mode = CipherMode.CBC;
+					using (CryptoStream cryptoStream = new CryptoStream(memoryStream, rijndaelManaged.CreateDecryptor(), CryptoStreamMode.Write))
+					{
+						cryptoStream.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+						cryptoStream.Close();
+					}
+					result = memoryStream.ToArray();
+				}
+			}
+			return result;
+		}
+
+    }
+}
+```
+
+Now lets take a look into the programm code, by using **ilspy** to decompile the extracted file:
+
+```
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
+using System.Security;
+using System.Security.Cryptography;
+using System.Security.Permissions;
+using System.Text;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue)]
+[assembly: TargetFramework(".NETStandard,Version=v2.0", FrameworkDisplayName = "")]
+[assembly: AssemblyCompany("ReMe_Inner")]
+[assembly: AssemblyConfiguration("Debug")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0")]
+[assembly: AssemblyProduct("ReMe_Inner")]
+[assembly: AssemblyTitle("ReMe_Inner")]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: AssemblyVersion("1.0.0.0")]
+[module: UnverifiableCode]
+namespace ReMe_Inner
+{
+	public class Inner
+	{
+		public static void Check(string[] args)
+		{
+			if (args.Length <= 1)
+			{
+				Console.WriteLine("Nope.");
+			}
+			else
+			{
+				string[] array = args[1].Split(new string[1]
+				{
+					"_"
+				}, StringSplitOptions.RemoveEmptyEntries);
+				if (array.Length != 8)
+				{
+					Console.WriteLine("Nope.");
+				}
+				else if ("CSCG{" + array[0] == "CSCG{n0w" && array[1] == "u" && array[2] == "know" && array[3] == "st4t1c" && array[4] == "and" && CalculateMD5Hash(array[5]).ToLower() == "b72f3bd391ba731a35708bfd8cd8a68f" && array[6] == "dotNet" && array[7] + "}" == "R3333}")
+				{
+					Console.WriteLine("Good job :)");
+				}
+			}
+		}
+
+		public static string CalculateMD5Hash(string input)
+		{
+			MD5 mD = MD5.Create();
+			byte[] bytes = Encoding.ASCII.GetBytes(input);
+			byte[] array = mD.ComputeHash(bytes);
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < array.Length; i++)
+			{
+				stringBuilder.Append(array[i].ToString("X2"));
+			}
+			return stringBuilder.ToString();
+		}
+	}
+}
+```
+We can already read a part from the flag from the line **else if ("CSCG{" + array[0] == "CSCG{n0w" && array[1] == "u" && array[2] == "know" && array[3] == "st4t1c" && array[4] == "and" && CalculateMD5Hash(array[5]).ToLower() == "b72f3bd391ba731a35708bfd8cd8a68f" && array[6] == "dotNet" && array[7] + "}" == "R3333}")**
+
+> CSCG{n0w\_u\_know\_st4t1c\_and_\<Something>\_dotNet\_R3333}
+
+the last step is to break the md5 hash with an onlinetool (i.e "https://www.md5online.org/")
+
+> b72f3bd391ba731a35708bfd8cd8a68f : dynamic 
+
+Flag : **CSCG{n0w_u_know_st4t1c_and_dynamic_dotNet_R3333}**
