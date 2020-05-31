@@ -302,7 +302,7 @@ private static void Main(string[] args)
 		}
 ```
 
-Thus, there seems to be another program hidden in the program itself. The main method loads bytes after a string **"THIS\_IS\_CSCG..."** and decrypts these bytes.
+So we have a hidden and encrypted method in the program itself. The main method loads bytes after a string **"THIS\_IS\_CSCG..."** and decrypts these bytes.
 We can again write our own c# programm to get this hidden and encrypted program. We just have to copy the main method (and the necessary program parts) and write the result of the decryption **byte[] rawAssembly = AES_Decrypt(array3, iLAsByteArray); //decrypt array3 with the bytes of InitialCheck** to a file **output.exe**:
 
 ```
