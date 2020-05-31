@@ -118,3 +118,149 @@ Flag: CSCG{pass_1_g3ts_a_x0r_p4ss_2_g3ts_a_x0r_EVERYBODY_GETS_A_X0R}
 Again, this security issue can be avoided, if the password string isn't in the binary. The password can be placed encrypted on the server.
 
 
+
+## reme Part 1
+
+**Challenge**
+
+.NET Reversing can't be that hard, right? But I've got some twists waiting for you 😈
+
+Execute with .NET Core Runtime 2.2 with windows, e.g. dotnet ReMe.dll
+
+**Solution**
+
+We get the files: **ReMe.dll, ReMe.deps.json and ReMe.runtimeconfig.json**.
+
+The dotnet decompiler **ilspy** can be used to decompile **ReMe.dll** (file decompiledReMe.cs in the appendix).
+One of the interesting parts is a string decryption, which seems to be the first flag:
+```
+private static void InitialCheck(string[] args)
+		{
+			Initialize();
+			if (Debugger.IsAttached)
+			{
+				Console.WriteLine("Nope");
+				Environment.Exit(-1);
+			}
+			bool isDebuggerPresent = true;
+			CheckRemoteDebuggerPresent(Process.GetCurrentProcess().Handle, ref isDebuggerPresent);
+			if (isDebuggerPresent)
+			{
+				Console.WriteLine("Nope");
+				Environment.Exit(-1);
+			}
+			if (IsDebuggerPresent())
+			{
+				Console.WriteLine("Nope");
+				Environment.Exit(-1);
+			}
+			if (args.Length == 0)
+			{
+				Console.WriteLine("Usage: ReMe.exe [password] [flag]");
+				Environment.Exit(-1);
+			}
+			if (args[0] != StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))
+			{
+				Console.WriteLine("Nope");
+				Environment.Exit(-1);
+			}
+			else
+			{
+				Console.WriteLine("There you go. Thats the first of the two flags! CSCG{{{0}}}", args[0]);
+			}
+			IntPtr moduleHandle = GetModuleHandle("kernel32.dll");
+			if (moduleHandle != IntPtr.Zero)
+			{
+				IntPtr procAddress = GetProcAddress(moduleHandle, "CheckRemoteDebuggerPresent");
+				if (Marshal.ReadByte(procAddress) == 233)
+				{
+					Console.WriteLine("Nope!");
+					Environment.Exit(-1);
+				}
+			}
+		}
+
+```
+The result from **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))** is compared with the first programm argument. If we pass the correct string, the flag will be printed on the console **Console.WriteLine("There you go. Thats the first of the two flags! CSCG{{{0}}}", args[0]);**.
+The code also contains the encryption and decryption function. So if we copy the parts we need and executes the encryption method, we get the flag.
+We can write a new c# file with just a main method, calling **StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="))**, and the decryption method itself:
+
+
+```
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Security;
+using System.Security.Cryptography;
+using System.Security.Permissions;
+using System.Text;
+
+ 
+    
+    public static class StringEncryption
+	{
+		public static void Main(string[] args){
+			Console.WriteLine(StringEncryption.Decrypt("D/T9XRgUcKDjgXEldEzeEsVjIcqUTl7047pPaw7DZ9I="));
+    	}
+		
+
+		public static string Decrypt(string cipherText)
+		{
+			string password = "A_Wise_Man_Once_Told_Me_Obfuscation_Is_Useless_Anyway";
+			cipherText = cipherText.Replace(" ", "+");
+			byte[] array = Convert.FromBase64String(cipherText);
+			using (Aes aes = Aes.Create())
+			{
+				Rfc2898DeriveBytes rfc2898DeriveBytes = new Rfc2898DeriveBytes(password, new byte[13]
+				{
+					73,
+					118,
+					97,
+					110,
+					32,
+					77,
+					101,
+					100,
+					118,
+					101,
+					100,
+					101,
+					118
+				});
+				aes.Key = rfc2898DeriveBytes.GetBytes(32);
+				aes.IV = rfc2898DeriveBytes.GetBytes(16);
+				using (MemoryStream memoryStream = new MemoryStream())
+				{
+					using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write))
+					{
+						cryptoStream.Write(array, 0, array.Length);
+						cryptoStream.Close();
+					}
+					cipherText = Encoding.Unicode.GetString(memoryStream.ToArray());
+				}
+			}
+			return cipherText;
+		}
+	}
+
+```
+Now if we run this programm, we get the flag content **CanIHazFlag?**.
+
+Flag: **CSCG{CanIHazFlag?}**
+
+## reme Part 2
+
+**Challenge**
+
+**Solution**
+
+
