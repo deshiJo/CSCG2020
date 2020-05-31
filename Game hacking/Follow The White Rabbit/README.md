@@ -148,18 +148,25 @@ namespace followWhiteRabbit_hack
 }
 ```
 
-If the dll is injected with CheatEngine, the scene can be loaded by pressing ** **.
+To inject the dll use tools like SharpMonoInjector. 
+
+![](writeupfiles/DLLInject.png)
+
+After injecting the dll, the scene can be loaded by pressing **F9** (see dll injection code).
+
+![](writeupfiles/BeforeLoad.png)
+
+![](writeupfiles/AfterLoad.png)
+
 Now we have to find the y-coordination of our Character again, to teleport us up to the building. Use cheat eninge and search for unknown float values. Cheat engine can search for memory values by looking for increasing, decreasing, unchanged, etc values.
 So if we move our character a hill up and down, search for increased and decreased float values, we can decrease the possible memory addresses of the y-coordination.
-
-Image
 
 If we have found the correct value, modify this value to teleport our character up and down. 
 
 The flag can now be found in the new building
 
-Image
+![](writeupfiles/FlagDataMining.png)
 
-**Flag: **
+**Flag: CSCG{03ASY\_teleport\_and\_datamining\_scenes}**
 
 
