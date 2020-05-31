@@ -28,7 +28,7 @@ unfortunately the server does not allow passing the walls, so we have to solve t
 Just follow the paths until you reach the tower
 
 (Image in the appendix)
-![](writeupfiles/Tower.png)
+![](writeupfiles/Tower/Tower.png)
 
 
 ## The Floor is Lava
@@ -56,4 +56,4 @@ When the y-coordination is found, we can lock the value and change it to a highe
 unfortunately the server does not allow passing the walls, so we have to solve the maze manually. But with the fly hack, we have a good overview of the whole maze.
 
 (image in the appendix)
-![](writeupfiles/lava.png)
+![](writeupfiles/Lava/Lava.png)
