@@ -449,10 +449,9 @@ Unfortunately there are multple security mechanisms activated.
 Non execution bit is set, so we can't place shellcode on the stack and also PIE is enable. Thus we can't place our own code and have to use what we have within the binary. We can use a return to libc attack to abuse the libc functions, by overwrite the return address of **AAAAAAAA()** with the address of a function from the libc. 
 We can abuse the system function from the libc while placing the correct parameter on the stack or the correct Registers (depends on the calling convention).
 
-The function **welcome()** contains a printf() call, which can be abused for a format string attack. This can leak an address, which help us to calculate the address of **system()** and the stack canary.
-We can calulate the difference of the address from **WINguardium\_leviosa()** and the leaked address with gdb. If we know this difference, we can calculate the address of **WINguardium\_leviosa()** for every execution of the binary, even if PIE is enabled.
+The function **welcome()** contains a printf() call, which can be abused for a format string attack. This can leak an address, which help us to calculate the address of **system(...)** and the stack canary.
 
-To get the correct offsets of the libc functions, we can use the tool **libc-database** (https://github.com/niklasb/libc-database) and the dockerfile from liveoverflow (https://github.com/LiveOverflow/pwn_docker_example/blob/master/ctf/Dockerfile), which uses the same libc as the challenge.
+To get the correct offsets of the libc functions (i.e system(...)), we can use the tool **libc-database** (https://github.com/niklasb/libc-database) and the dockerfile from liveoverflow (https://github.com/LiveOverflow/pwn_docker_example/blob/master/ctf/Dockerfile), which uses the same libc as the challenge. If we run libc-database on the libc on the dockercontainer, we get the correct offsets. Our exploit only have to calculate the base address of the libc by leaking an address with the format string attack in **welcome()**.
 
 ```
 offset___libc_start_main_ret = 0x271e3
