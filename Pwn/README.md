@@ -167,6 +167,8 @@ The format string attack, can be avoided with correct usage of format strings, l
 
 **Challenge**
 
+This is a introductory challenge for exploiting Linux binaries with memory corruptions. Nowodays there are quite a few mitigations that make it not as straight forward as it used to be. So in order to introduce players to pwnable challenges, LiveOverflow created a video walkthrough of the first challenge. An alternative writeup can also be found by 0x4d5a. More resources can also be found here.
+
 **Solution**
 
 This challenge we get a script running on a server. 
@@ -214,6 +216,16 @@ void AAAAAAAA() {
         printf("-10 Points for Ravenclaw!\n");
         _exit(0);
     }
+}
+
+void main(int argc, char* argv[]) {
+	  ignore_me_init_buffering();
+	  ignore_me_init_signal();
+
+    check_password_stage1();
+
+    welcome();
+    AAAAAAAA();
 }
 ```
 
@@ -341,7 +353,7 @@ The script leaks an address of an instruction from the main method and also the 
 The calculated difference of this instruction and **WINguardium\_leviosa()** (calculated with GDB) is substracted from the leaked address, to get the address of **WINguardium\_leviosa()**.
 Now we can use the buffer overflow from **AAAAAAAA()**, to place the leaked canary and override the return address of this function with the calculated **WINguardium\_leviosa()** address.
 
-This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW_PRACTICE_MORE}**
+This will lead to execute **system("bin/sh")** on the server, which allows us to list the files on the server and leak the content of the file **flag**: **CSCG{NOW\_GET\_VOLDEMORT}**
 
 ![](writeupfiles/pwn2Result.png)
 
